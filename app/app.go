@@ -17,14 +17,14 @@ var AdminNotLoggedErr = errors.New("Admin is not logged")
 
 func init() {
     r := mux.NewRouter()
-    r.Handle("/admin", util.ErrorHandler(handleAdminLogin)).Methods("POST")
+    r.Handle("/api/admin", util.ErrorHandler(handleAdminLogin)).Methods("POST")
 
     r.Handle("/api/users", util.ErrorHandler(handleUserList)).Methods("GET")
-    r.Handle("/users", util.ErrorHandler(handleUserAdd)).Methods("POST")
-    r.Handle("/users/{id:[a-zA-Z0-9]+}", util.ErrorHandler(handleUserGet)).Methods("GET")
+    r.Handle("/api/users", util.ErrorHandler(handleUserAdd)).Methods("POST")
+    r.Handle("/api/users/{id:[a-zA-Z0-9]+}", util.ErrorHandler(handleUserGet)).Methods("GET")
 
-    r.Handle("/users/points/{id:[a-zA-Z0-9]+}", util.ErrorHandler(handleUserPointsGet)).Methods("GET")
-    r.Handle("/users/points", util.ErrorHandler(handleUserPointsAdd)).Methods("POST")
+    r.Handle("/api/users/points/{id:[a-zA-Z0-9]+}", util.ErrorHandler(handleUserPointsGet)).Methods("GET")
+    r.Handle("/api/users/points", util.ErrorHandler(handleUserPointsAdd)).Methods("POST")
 
     http.Handle("/", r)
 }

@@ -1,0 +1,11 @@
+<div class="jumbotron">
+  <h3>Admin</h3>
+  <form role="form" ng-submit="sendPin()">
+  <div class="form-group">
+    <label for="inputPin">PIN</label>
+    <input type="password" class="form-control" id="inputPin" placeholder="PIN..." ng-model="inputPin" ng-init="" required>
+  </div>
+  <button type="submit" class="btn btn-default">Login</button>
+  <p ng-show="message">{{message}}</p>
+</form>
+</div>

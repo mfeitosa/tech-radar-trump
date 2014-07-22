@@ -1,0 +1,15 @@
+<div class="jumbotron">
+  <h3>Nova Batalha</h3>
+  <form role="form" ng-submit="startBattle()">
+  <div class="form-group">
+    <label class="pull-left" for="inputId1">ID Player 1</label>
+    <input type="text" class="form-control" id="inputId1" placeholder="ID Player 1..." ng-model="inputId1" ng-init="" required>
+  </div>
+  <div class="form-group">
+    <label class="pull-left" for="inputId2">ID Player 2</label>
+    <input type="text" class="form-control" id="inputId2" placeholder="ID Player 2..." ng-model="inputId2" ng-init="" required>
+  </div>
+  <button type="submit" class="btn btn-default">Iniciar</button>
+  <p ng-show="message">{{message}}</p>
+</form>
+</div>

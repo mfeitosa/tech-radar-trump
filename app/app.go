@@ -9,10 +9,10 @@ import (
   "user"
   "util"
   "errors"
-  "battle"
 )
 
-var store = sessions.NewCookieStore([]byte("oioioi"))
+const ADMIN_PIN = "D1SRUPT1VE"
+var store = sessions.NewCookieStore([]byte("YLL7CX2ZYMLL3ZH"))
 var AdminNotLoggedErr = errors.New("Admin is not logged")
 
 func init() {
@@ -21,32 +21,31 @@ func init() {
 
     r.Handle("/users", util.ErrorHandler(handleUserList)).Methods("GET")
     r.Handle("/users", util.ErrorHandler(handleUserAdd)).Methods("POST")
-    r.Handle("/users/id={id:[a-zA-Z0-9]+}", util.ErrorHandler(handleUserGet)).Methods("GET")
+    r.Handle("/users/{id:[a-zA-Z0-9]+}", util.ErrorHandler(handleUserGet)).Methods("GET")
 
-    r.Handle("/battles", util.ErrorHandler(handleBattleResults)).Methods("GET")
-    r.Handle("/battles", util.ErrorHandler(handleBattleAdd)).Methods("POST")
+    r.Handle("/users/points/{id:[a-zA-Z0-9]+}", util.ErrorHandler(handleUserPointsGet)).Methods("GET")
+    r.Handle("/users/points", util.ErrorHandler(handleUserPointsAdd)).Methods("POST")
 
     http.Handle("/", r)
 }
 
 func handleUserList(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
 
-  if err := checkLogin(w, r, c); err != nil {
-    return err
-  }
-
-  users, err := user.GetAll(c)
+  usrs, err := user.GetAll(c)
   if err != nil {
     return err
   }
 
-  return util.WriteJsonReponse(w, users)
+  if checkAdmin(w, r, c) {
+    return util.WriteJsonReponse(w, usrs)
+  }
+  return util.WriteJsonReponse(w, user.Strict(usrs))
 }
 
 func handleUserAdd(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
 
-  if err := checkLogin(w, r, c); err != nil {
-    return err
+  if !checkAdmin(w, r, c) {
+    return AdminNotLoggedErr
   }
 
   decoder := json.NewDecoder(r.Body)
@@ -57,7 +56,7 @@ func handleUserAdd(w http.ResponseWriter, r *http.Request, c appengine.Context) 
 
   u.GenerateIdAndPin()
 
-  _, err := u.Save(c)
+  _, err := u.Save(c, user.NewKey(c))
   if err != nil {
     return err
   }
@@ -65,48 +64,69 @@ func handleUserAdd(w http.ResponseWriter, r *http.Request, c appengine.Context) 
   return util.WriteJsonReponse(w, u)
 }
 
+func handleUserPointsGet(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
+  vars := mux.Vars(r)
+  id := vars["id"]
+
+  _, u, err := user.ById(c, id)
+  if err != nil {
+    return err
+  }
+
+  placing, err := user.Placing(c, u.Points)
+  if err != nil {
+    return err
+  }
+
+  resp := map[string]interface{}{
+    "placing": placing,
+  }
+
+  return util.WriteJsonReponse(w, resp)
+}
+
 func handleUserGet(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
   vars := mux.Vars(r)
   id := vars["id"]
 
-  user, err := user.GetById(c, id)
+  _, user, err := user.ById(c, id)
   if err != nil {
     return err
   }
 
-  if err := checkLogin(w, r, c); err != nil {
-    if err.Error() != AdminNotLoggedErr.Error() {
-      return err
-    }
-    return util.WriteJsonReponse(w, user.StrictUser)
+  if checkAdmin(w, r, c) {
+    return util.WriteJsonReponse(w, user)
   }
-  return util.WriteJsonReponse(w, user)
+  return util.WriteJsonReponse(w, user.StrictUser)
 }
 
-func handleBattleAdd(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
+func handleUserPointsAdd(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
+
+  if !checkAdmin(w, r, c) {
+    return AdminNotLoggedErr
+  }
+
   decoder := json.NewDecoder(r.Body)
-  b := &battle.Battle{}
-  if err := decoder.Decode(b); err != nil {
+  userInfo := &user.User{}
+  if err := decoder.Decode(userInfo); err != nil {
     return err
   }
 
-  _, err := b.Save(c)
+  k, u, err := user.ById(c, userInfo.Id)
   if err != nil {
     return err
   }
-
-  result, err := battle.NewBattleResult(c, b.WinnerId, b.LoserId)
-
-  return util.WriteJsonReponse(w, result)
-}
-
-func handleBattleResults(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
-  results, err := battle.CalcResults(c)
-  if err != nil {
+  if u == nil {
+    return errors.New("there`s no user with this userId")
+  }
+  u.Points = userInfo.Points
+  if _, err := u.Save(c, k); err != nil {
     return err
   }
-  return util.WriteJsonReponse(w, results)
+  return nil
 }
+
+//admin
 
 func handleAdminLogin(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
   decoder := json.NewDecoder(r.Body)
@@ -115,26 +135,24 @@ func handleAdminLogin(w http.ResponseWriter, r *http.Request, c appengine.Contex
     return err
   }
 
-  if json["pin"] != "PIN" {
+  if json["pin"] != ADMIN_PIN {
     return errors.New("Admin PIN is wrong.")
   }
 
-  return registerLogin(w, r, c)
+  return registerAdmin(w, r, c)
 }
 
-func checkLogin(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
+func checkAdmin(w http.ResponseWriter, r *http.Request, c appengine.Context) bool {
   session, err := store.Get(r, "admin")
   if err != nil {
-    return err
+    c.Debugf("%s", err)
+    return false
   }
-  if _, ok := session.Values["admin"]; !ok {
-    w.WriteHeader(http.StatusForbidden)
-    return AdminNotLoggedErr
-  }
-  return nil
+  _, ok := session.Values["admin"]
+  return ok
 }
 
-func registerLogin(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
+func registerAdmin(w http.ResponseWriter, r *http.Request, c appengine.Context) error {
   session, err := store.Get(r, "admin")
   if err != nil {
     return err

@@ -8,4 +8,5 @@ handlers:
   script: _go_app
 
 - url: /
-  static_dir: webapp/app
+  static_dir: webapp/dist
+  upload: webapp/dist/.*

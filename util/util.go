@@ -1,12 +1,12 @@
 package util
 
 import (
-	"net/http"
 	"appengine"
-	"encoding/json"
 	"crypto/rand"
 	"encoding/base32"
+	"encoding/json"
 	"fmt"
+	"net/http"
 )
 
 type ErrorHandler func(w http.ResponseWriter, r *http.Request, c appengine.Context) error
@@ -25,7 +25,7 @@ func (h ErrorHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func WriteJsonReponse(w http.ResponseWriter, obj interface{}) error {
 	js, err := json.Marshal(obj)
 	if err != nil {
-	 	return err
+		return err
 	}
 
 	w.Header().Set("Content-Type", "application/json")

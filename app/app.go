@@ -11,7 +11,7 @@ import (
   "errors"
 )
 
-const ADMIN_PIN = "D1SRUPT1VE"
+const ADMIN_PIN = "D1SRUPT1V3"
 var store = sessions.NewCookieStore([]byte("YLL7CX2ZYMLL3ZH"))
 var AdminNotLoggedErr = errors.New("Admin is not logged")
 
@@ -19,7 +19,7 @@ func init() {
     r := mux.NewRouter()
     r.Handle("/admin", util.ErrorHandler(handleAdminLogin)).Methods("POST")
 
-    r.Handle("/users", util.ErrorHandler(handleUserList)).Methods("GET")
+    r.Handle("/api/users", util.ErrorHandler(handleUserList)).Methods("GET")
     r.Handle("/users", util.ErrorHandler(handleUserAdd)).Methods("POST")
     r.Handle("/users/{id:[a-zA-Z0-9]+}", util.ErrorHandler(handleUserGet)).Methods("GET")
 

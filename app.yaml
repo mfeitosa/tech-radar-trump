@@ -7,5 +7,25 @@ handlers:
 - url: /api/.*
   script: _go_app
 
+- url: /fonts
+  static_dir: webapp/dist/fonts
+
+- url: /images
+  static_dir: webapp/dist/images
+
+- url: /scripts
+  static_dir: webapp/dist/scripts
+
+- url: /styles
+  static_dir: webapp/dist/styles
+
+- url: /views
+  static_dir: webapp/dist/views
+
 - url: /
-  static_dir: webapp/dist
+  static_files: webapp/dist/index.html
+  upload: webapp/dist/index.html
+
+
+
+

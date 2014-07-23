@@ -187,8 +187,7 @@ angular.module('radarAppApp').controller('PanelCtrl', [
     if ($cookies.admin) {
       $scope.panelOptions = {
         'Jogadores': '/list_players',
-        'Adicionar Jogador': '/add_player',
-        'Resultados': '/results'
+        'Adicionar Jogador': '/add_player'
       };
     } else {
       $scope.panelOptions = { 'Resultados': '/results' };

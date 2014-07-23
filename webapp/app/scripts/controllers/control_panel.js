@@ -13,7 +13,6 @@ angular.module('radarAppApp')
 	    $scope.panelOptions = {
 	      'Jogadores':'/list_players',
 	      'Adicionar Jogador':'/add_player',
-	      'Resultados':'/results'
 	    };
   	}else{
   		$scope.panelOptions = {

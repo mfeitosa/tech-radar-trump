@@ -9,4 +9,3 @@ handlers:
 
 - url: /
   static_dir: webapp/dist
-  upload: webapp/dist/.*

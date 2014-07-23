@@ -8,21 +8,32 @@
  * Service in the radarAppApp.
  */
 angular.module('radarAppApp')
-  .service('APIService', function APIService() {
-  	var registeredPlayerCache = {};
+  .service('APIService', function APIService($http, $window) {
+  	var HOST = 'http://'+$window.location.host;
   	var battle = {};
-	this.validatePin = function (pin) {
-		if(pin==='1234'){
-			return true;
-		}else{
-			return false;
-		}
+  	this.playerInfo = undefined;
+	this.validatePin = function (pin, success, error) {
+		$http.post(HOST+'/api/admin',{"pin":pin}).success(success).error(error);
 	};
-	this.registerPlayer = function(playerData){
-		var response = playerData;
-		response.id = 'mocked49';
-		registeredPlayerCache[response.id] = response;
-		return response;
+  this.viewRank = function (playerId, success, error){
+    $http.get(HOST+'/api/users/points/'+playerId).success(success).error(error);
+  };
+	this.registerPlayer = function(playerData, success, error){
+		$http.post(HOST+'/api/users',playerData).success(success).error(error);
+    };
+    this.updatePoints = function(playerId, points, success, error){
+    	$http.post(HOST+'/api/users/points',
+	    	{
+			   "id": playerId,
+			   "points": points
+			}
+		).success(success).error(error);
+    };
+    this.getPlayer = function (playerId, success, error){
+    	$http.get(HOST+'/api/users/'+playerId).success(success).error(error);
+    };
+    this.listPlayers = function (success, error){
+    	$http.get(HOST+'/api/users').success(success).error(error);
     };
     this.startBattle = function(playerId1, playerId2){
 		if (playerId1 === playerId2){

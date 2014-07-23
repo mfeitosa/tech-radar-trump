@@ -11,11 +11,11 @@ angular.module('radarAppApp')
   .controller('MainCtrl', function ($scope, $location, APIService) {
     $scope.message = false;
     $scope.sendPin = function (){
-      if (APIService.validatePin($scope.inputPin)){
+      APIService.validatePin($scope.inputPin, function(){
         $scope.message = false;
-        $location.path('/admin_panel');
-      }else{
+        $location.path('/control_panel');
+      }, function(){
         $scope.message = 'Invalid PIN';
-      }
+      });
     };
   });

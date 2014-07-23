@@ -20,16 +20,16 @@ angular
   .config(function ($routeProvider) {
     $routeProvider
       .when('/', {
-        templateUrl: 'views/battle_start.html',
-        controller: 'BattleStartCtrl'
+        templateUrl: 'views/view_single_rank.html',
+        controller: 'ViewSingleRankCtrl'
       })
       .when('/admin', {
         templateUrl: 'views/main.html',
         controller: 'MainCtrl'
       })
-      .when('/admin_panel', {
-        templateUrl: 'views/admin_panel.html',
-        controller: 'AdminPanelCtrl'
+      .when('/control_panel', {
+        templateUrl: 'views/control_panel.html',
+        controller: 'PanelCtrl'
       })
       .when('/about', {
         templateUrl: 'views/about.html',
@@ -39,7 +39,7 @@ angular
         templateUrl: 'views/add_player.html',
         controller: 'AddPlayerCtrl'
       })
-      .when('/player_info', {
+      .when('/player_info/:player_id?', {
         templateUrl: 'views/player_info.html',
         controller: 'PlayerInfoCtrl'
       })
@@ -58,6 +58,18 @@ angular
       .when('/battle_thanks', {
         templateUrl: 'views/battle_thanks.html',
         controller: 'BattleThanksCtrl'
+      })
+      .when('/list_players', {
+        templateUrl: 'views/list_players.html',
+        controller: 'ListPlayersCtrl'
+      })
+      .when('/edit_player/:player_id', {
+        templateUrl: 'views/edit_player.html',
+        controller: 'EditPlayerCtrl'
+      })
+      .when('/view_single_rank/:player_id', {
+        templateUrl: 'views/view_single_rank.html',
+        controller: 'ViewSingleRankCtrl'
       })
       .otherwise({
         redirectTo: '/'

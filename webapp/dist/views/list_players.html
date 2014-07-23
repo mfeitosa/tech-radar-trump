@@ -1,0 +1,1 @@
+<table class="table"> <thead> <tr> <th># <th>Nome <th>Pontos   <tbody> <tr ng-repeat="player in players"> <td><a href="#player_info/{{player.id}}">{{player.id}}</a> <td>{{player.name}} <td>{{player.points}} <td><a ng-show="canEdit" href="#/edit_player/{{player.id}}" class="btn btn-default">Editar</a>   </table>

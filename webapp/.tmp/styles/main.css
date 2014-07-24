@@ -1,3 +1,7 @@
+html {
+  height: 100% !important;
+}
+
 /* Space out content a bit */
 body {
   font-family: "Open Sans" !important;
@@ -65,12 +69,14 @@ body {
 .jumbotron {
   text-align: center;
   color: rgb(177, 28, 84) !important;
+  padding: 0px 30px !important;
 }
 .jumbotron .btn {
   font-size: 21px;
   padding: 14px 24px;
-  color: rgb(177, 28, 84) !important;
+  color: white !important;
   border-color: rgb(177, 28, 84) !important;
+  background-color: rgb(177, 28, 84) !important;
 }
 
 /* Supporting marketing content */
